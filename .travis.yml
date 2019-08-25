@@ -1,6 +1,6 @@
 language: go
 go:
-- 'tip'
+- '1.12.9'
 
 before_install:
   - sudo apt-get install -y vowpal-wabbit
