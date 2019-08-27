@@ -1,6 +1,7 @@
 package vw
 
-// #cgo pkg-config: libvw_c_wrapper
+// #cgo darwin pkg-config: libvw_c_wrapper
+// #cgo linux pkg-config: vowpalwabbit
 // #include <vowpalwabbit/vwdll.h>
 // #include <stdlib.h>
 import "C"
