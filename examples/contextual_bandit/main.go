@@ -28,6 +28,7 @@ func argMax(vals []float32) int {
 	for i, val := range vals {
 		if val > maxVal {
 			maxIndx = i
+			maxVal = val
 		}
 	}
 	return maxIndx
@@ -67,7 +68,7 @@ func main() {
 		}
 		predictExample.Finish()
 
-		example := fmt.Sprintf(" %d:%f:1 | %s", (selected + 1), cost, contextValue)
+		example := fmt.Sprintf(" %d:%f:%f | %s", (selected + 1), cost, scores[selected], contextValue)
 		trainExample, err := vw.ReadExample(example)
 		if err != nil {
 			panic(err)
