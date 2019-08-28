@@ -5,3 +5,4 @@ go:
 before_install:
   - sudo apt-get update
   - sudo apt install -y --no-install-recommends libvw-dev
+  - pkg-config --libs
