@@ -82,7 +82,7 @@ func main() {
 		trainExample.Finish()
 
 		tries++
-		if tries%500 == 0 {
+		if (tries < 500 && tries%50 == 0) || tries%500 == 0 {
 			fmt.Printf("try %d: selected right arm %d out of %d (%f)\n", tries, wins, tries, (float64(wins)/float64(tries))*100)
 		}
 
