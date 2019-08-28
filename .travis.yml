@@ -3,4 +3,4 @@ go:
 - '1.12.9'
 
 before_install:
-  - sudo apt install libvw-dev
+  - sudo apt install -y --no-install-recommends libvw-dev
