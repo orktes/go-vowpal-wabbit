@@ -58,7 +58,6 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-
 		vw.Predict(predictExample)
 
 		scores := predictExample.GetActionScores()
@@ -73,7 +72,7 @@ func main() {
 		}
 		predictExample.Finish()
 
-		example := fmt.Sprintf(" %d:%f:%f | %s", (selected + 1), cost, scores[selected], contextValue)
+		example := fmt.Sprintf("%d:%f:%f | %s", (selected + 1), cost, scores[selected], contextValue)
 		trainExample, err := vw.ReadExample(example)
 		if err != nil {
 			panic(err)
