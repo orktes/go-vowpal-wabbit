@@ -5,7 +5,5 @@ go:
 before_install:
   - git clone --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git
   - cd vowpal_wabbit
-  - mkdir build
-  - cd build 
   - make -j 8
   - make install
