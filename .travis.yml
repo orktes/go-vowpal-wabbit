@@ -3,7 +3,9 @@ go:
 - '1.12.9'
 
 before_install:
-  - git clone https://github.com/VowpalWabbit/vowpal_wabbit.git
+  - git clone --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git
   - cd vowpal_wabbit
+  - mkdir build
+  - cd build 
   - make -j 8
   - make install
