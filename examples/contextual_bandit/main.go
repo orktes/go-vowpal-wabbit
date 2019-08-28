@@ -21,19 +21,6 @@ func randomValue(vals []string) string {
 	return vals[rand.Intn(len(vals))]
 }
 
-func argMax(vals []float32) int {
-	maxIndx := 0
-	maxVal := float32(0)
-
-	for i, val := range vals {
-		if val > maxVal {
-			maxIndx = i
-			maxVal = val
-		}
-	}
-	return maxIndx
-}
-
 func weightedRandom(vals []float32) int {
 	sum := float32(0)
 	for _, val := range vals {
