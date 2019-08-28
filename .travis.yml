@@ -3,4 +3,7 @@ go:
 - '1.12.9'
 
 before_install:
-  - sudo apt-get install -y vowpal-wabbit
+  - git clone git@github.com:VowpalWabbit/vowpal_wabbit.git
+  - cd vowpal_wabbit
+  - make -j 8
+  - make install
