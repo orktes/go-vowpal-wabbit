@@ -3,6 +3,9 @@ go:
 - '1.12.9'
 
 before_install:
-  - sudo apt-get update
-  - sudo apt install -y --no-install-recommends libvw-dev vowpal-wabbit
-  - pkg-config --list-all
+  - git clone --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git
+  - cd vowpal_wabbit
+  - sudo apt update -y
+  - sudo apt install -y libboost-dev libboost-program-options-dev libboost-system-dev libboost-thread-dev libboost-math-dev libboost-test-dev zlib1g-dev cmake g++
+  - make -j 8
+  - make install
