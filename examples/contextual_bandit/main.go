@@ -34,7 +34,7 @@ func argMax(vals []float32) int {
 }
 
 func main() {
-	vw, err := wabbit.New("--cb_explore 4")
+	vw, err := wabbit.New("--cb_explore 4 --cover 3")
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ func main() {
 	for {
 		contextValue := randomValue(contextValues)
 
-		predictExample, err := vw.ReadExample(" | " + contextValue)
+		predictExample, err := vw.ReadExample(fmt.Sprintf(" | %s", contextValue))
 		if err != nil {
 			panic(err)
 		}
@@ -56,12 +56,11 @@ func main() {
 		vw.Predict(predictExample)
 
 		scores := predictExample.GetActionScores()
-		fmt.Printf("scores: %+v\n", scores)
 		selected := argMax(scores)
 
 		cost := 0.0
 		if selected != indexOf(contextValue, contextValues) {
-			cost = 0.5
+			cost = 1.0
 		} else {
 			cost = 0.0
 			wins++
@@ -69,7 +68,6 @@ func main() {
 		predictExample.Finish()
 
 		example := fmt.Sprintf(" %d:%f:1 | %s", (selected + 1), cost, contextValue)
-		println(example)
 		trainExample, err := vw.ReadExample(example)
 		if err != nil {
 			panic(err)
@@ -79,10 +77,12 @@ func main() {
 		trainExample.Finish()
 
 		tries++
-
-		if tries%1000 == 0 {
-			fmt.Printf("%f\n", float64(wins)/float64(tries))
+		if tries%500 == 0 {
+			fmt.Printf("try %d: selected right arm %d out of %d (%f)\n", tries, wins, tries, (float64(wins)/float64(tries))*100)
 		}
 
+		if tries > 10000 {
+			break
+		}
 	}
 }
