@@ -27,6 +27,82 @@ func (ex *Example) Finish() {
 	ex.finished = true
 }
 
+// GetLabel returns label
+func (ex *Example) GetLabel() float32 {
+	return float32(C.VW_GetLabel(ex.exHandle))
+}
+
+// GetInitial returns initial
+func (ex *Example) GetInitial() float32 {
+	return float32(C.VW_GetInitial(ex.exHandle))
+}
+
+// GetImportance returns importance
+func (ex *Example) GetImportance() float32 {
+	return float32(C.VW_GetImportance(ex.exHandle))
+}
+
+// GetPrediction returns prediction
+func (ex *Example) GetPrediction() float32 {
+	return float32(C.VW_GetPrediction(ex.exHandle))
+}
+
+// GetCostSensitivePrediction returns initial
+func (ex *Example) GetCostSensitivePrediction() float32 {
+	return float32(C.VW_GetCostSensitivePrediction(ex.exHandle))
+}
+
+// GetTopicPrediction returns topic prediction for index
+func (ex *Example) GetTopicPrediction(i int) float32 {
+	return float32(C.VW_GetTopicPrediction(ex.exHandle, C.size_t(i)))
+}
+
+// GetActionScore returns action score for index
+func (ex *Example) GetActionScore(i int) float32 {
+	return float32(C.VW_GetActionScore(ex.exHandle, C.size_t(i)))
+}
+
+// GetActionScores returns all action scores as a slice
+func (ex *Example) GetActionScores() []float32 {
+	length := ex.GetActionScoreLength()
+	if length < 0 {
+		return nil
+	}
+
+	scores := make([]float32, length)
+
+	for i := 0; i < length; i++ {
+		scores[i] = ex.GetActionScore(i)
+	}
+
+	return scores
+}
+
+// GetActionScoreLength get action score length
+func (ex *Example) GetActionScoreLength() int {
+	return int(C.VW_GetActionScoreLength(ex.exHandle))
+}
+
+// GetTagLength returns tag length
+func (ex *Example) GetTagLength() int {
+	return int(C.VW_GetTagLength(ex.exHandle))
+}
+
+// GetTag returns tag
+func (ex *Example) GetTag() string {
+	return C.GoString(C.VW_GetTag(ex.exHandle))
+}
+
+// GetFeatureNumber returns number of features
+func (ex *Example) GetFeatureNumber() int {
+	return int(C.VW_GetFeatureNumber(ex.exHandle))
+}
+
+// GetConfidence returns confidence
+func (ex *Example) GetConfidence(i int) float32 {
+	return float32(C.VW_GetConfidence(ex.exHandle))
+}
+
 // VW struct for a single Vowpal Wabbit model
 type VW struct {
 	handle C.VW_HANDLE
@@ -90,6 +166,11 @@ func (vw *VW) Learn(ex *Example) float32 {
 // Predict returns a prediction using the example
 func (vw *VW) Predict(ex *Example) float32 {
 	return float32(C.VW_Predict(vw.handle, ex.exHandle))
+}
+
+// PredictCostSensitive returns a cost sensitive prediction using the example
+func (vw *VW) PredictCostSensitive(ex *Example) float32 {
+	return float32(C.VW_PredictCostSensitive(vw.handle, ex.exHandle))
 }
 
 // SaveModel saves model to file given during construction
