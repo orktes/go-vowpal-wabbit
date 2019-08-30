@@ -1,5 +1,3 @@
-#define nullptr NULL
-
 #include <stdlib.h>
 #include <vowpalwabbit/vwdll.h>
 

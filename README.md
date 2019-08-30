@@ -11,7 +11,7 @@ import "github.com/orktes/go-vowpal-wabbit"
 
 ## Usage
 
-Library depends on the Vowpal Wabbit shared library. To install the shared lib please follow [VW installation instruction](https://github.com/VowpalWabbit/vowpal_wabbit/wiki/Getting-started). 
+Library depends on the Vowpal Wabbit shared library. To build & install the shared lib please follow [VW installation instruction](https://github.com/VowpalWabbit/vowpal_wabbit/wiki/Dependencies). 
 
 API is designed to closely resemble the C API of Vowpal Wabbit with minor changes done to make it more convinient to be used from go. Library is not thread safe and additional locking is required if libary is being called from multiple goroutines.
 
