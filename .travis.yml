@@ -11,3 +11,4 @@ before_install:
   - sudo make install
   - sudo ldconfig
   - cd ..
+  - pkg-config --list-all
