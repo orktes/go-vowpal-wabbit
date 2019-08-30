@@ -1,3 +1,7 @@
+// Package vw implements golang bindings for Vowpal Wabbit Online Learning library.
+// API is designed to closely resemble the C API of Vowpal Wabbit with minor changes
+// done to make it more convinient to be used from go. Library is not thread safe
+// and additional locking is required if libary is being called from multiple goroutines.
 package vw
 
 // #cgo CXXFLAGS: -std=c++11 -I${SRCDIR}/extra -I${SRCDIR} -O3 -Wall -g -Wno-sign-compare -Wno-unused-function -I/Library/Developer/CommandLineTools/usr/include/c++/v1 -I/usr/local/include
