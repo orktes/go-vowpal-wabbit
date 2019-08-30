@@ -11,7 +11,8 @@ RUN apt update && apt install -y libboost-dev \
                                  zlib1g-dev \
                                  cmake \
                                  g++ \
-                                 git
+                                 git \
+                                 rapidjson-dev 
 
 # TODO lock down the version
 RUN git clone --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git
