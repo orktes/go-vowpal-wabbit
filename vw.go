@@ -2,20 +2,20 @@ package vw
 
 // #cgo CXXFLAGS: -std=c++11 -I${SRCDIR}/extra -I${SRCDIR} -O3 -Wall -g -Wno-sign-compare -Wno-unused-function -I/Library/Developer/CommandLineTools/usr/include/c++/v1 -I/usr/local/include
 // #cgo LDFLAGS: -lstdc++
-// #cgo pkg-config: libvw_c_wrapper libvw
+// #cgo pkg-config: libvw_c_wrapper libvw rapidjson
 // #include <vowpalwabbit/vwdll.h>
 // #include <stdlib.h>
 // #include "lib.hpp"
 import "C"
 import (
+	"runtime"
 	"unsafe"
 )
 
 // Example a single Vowpal Wabbit example
 type Example struct {
-	vwHandle C.VW_HANDLE
 	exHandle C.VW_EXAMPLE
-
+	vwHandle C.VW_HANDLE
 	finished bool
 }
 
@@ -162,7 +162,48 @@ func (vw *VW) ReadExample(example string) (*Example, error) {
 
 // ReadDecisionServiceJSON reads examples from Decision Service JSON format
 func (vw *VW) ReadDecisionServiceJSON(json string) ([]*Example, error) {
-	return nil, nil
+	cstr := C.CString(json)
+	defer C.free(unsafe.Pointer(cstr))
+
+	var size C.ulong
+	examplePtr := C.VW_ReadDSJSONExample(vw.handle, cstr, &size)
+
+	exampleHandles := (*[1 << 30]C.VW_EXAMPLE)(unsafe.Pointer(examplePtr))[:size:size]
+	examples := make([]*Example, size)
+
+	for i, handle := range exampleHandles {
+		examples[i] = &Example{
+			vwHandle: vw.handle,
+			exHandle: handle,
+		}
+	}
+
+	C.free(unsafe.Pointer(examplePtr))
+
+	return examples, nil
+}
+
+// ReadJSON reads examples from format
+func (vw *VW) ReadJSON(json string) ([]*Example, error) {
+	cstr := C.CString(json)
+	defer C.free(unsafe.Pointer(cstr))
+
+	var size C.ulong
+	examplePtr := C.VW_ReadJSONExample(vw.handle, cstr, &size)
+
+	exampleHandles := (*[1 << 30]C.VW_EXAMPLE)(unsafe.Pointer(examplePtr))[:size:size]
+	examples := make([]*Example, size)
+
+	for i, handle := range exampleHandles {
+		examples[i] = &Example{
+			vwHandle: vw.handle,
+			exHandle: handle,
+		}
+	}
+
+	C.free(unsafe.Pointer(examplePtr))
+
+	return examples, nil
 }
 
 // Learn learns a single example and returns the score
@@ -173,6 +214,42 @@ func (vw *VW) Learn(ex *Example) float32 {
 // Predict returns a prediction using the example
 func (vw *VW) Predict(ex *Example) float32 {
 	return float32(C.VW_Predict(vw.handle, ex.exHandle))
+}
+
+// MultiLineLearn learns from a list of example and returns the score
+func (vw *VW) MultiLineLearn(exs []*Example) {
+	if len(exs) == 0 {
+		return
+	}
+
+	exHandles := make([]C.VW_EXAMPLE, len(exs))
+	for i, ex := range exs {
+		exHandles[i] = ex.exHandle
+	}
+
+	exPtr := (*C.VW_EXAMPLE)(unsafe.Pointer(&exHandles[0]))
+
+	C.VW_MultiLineLearn(vw.handle, exPtr, C.size_t(len(exHandles)))
+
+	runtime.KeepAlive(exHandles)
+}
+
+// MultiLinePredict predic using a list of examples
+func (vw *VW) MultiLinePredict(exs []*Example) {
+	if len(exs) == 0 {
+		return
+	}
+
+	exHandles := make([]C.VW_EXAMPLE, len(exs))
+	for i, ex := range exs {
+		exHandles[i] = ex.exHandle
+	}
+
+	exPtr := (*C.VW_EXAMPLE)(unsafe.Pointer(&exHandles[0]))
+
+	C.VW_MultiLinePredict(vw.handle, exPtr, C.size_t(len(exHandles)))
+
+	runtime.KeepAlive(exHandles)
 }
 
 // PredictCostSensitive returns a cost sensitive prediction using the example
