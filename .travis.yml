@@ -1,3 +1,4 @@
+dist: bionic
 language: go
 go:
 - '1.12.9'
@@ -10,4 +11,3 @@ before_install:
   - sudo make install
   - sudo ldconfig
   - cd ..
-  - pkg-config --list-all
