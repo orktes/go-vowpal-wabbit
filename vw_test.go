@@ -197,7 +197,29 @@ func TestReadJSON(t *testing.T) {
 	}
 
 	if len(examples) != 1 {
-		t.Error("should contain one example")
+		t.Error("should contain one example but contained", len(examples))
+	}
+
+	examples.Finish()
+}
+
+func TestReadJSONWithMultiLineLearn(t *testing.T) {
+	input := `
+	{"_labelIndex":1,"_label_Action":0,"_label_Cost":0,"_label_Probability":0.5,"_multi":[{"b_":"1","c_":"1","d_":"1"}, {"b_":"2","c_":"2","d_":"2"}]}
+	`
+
+	vw, _ := New("--json --cb_explore_adf --no_stdin")
+	defer vw.Finish()
+
+	examples, err := vw.ReadJSON(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	vw.MultiLineLearn(examples)
+
+	if examples[0].GetActionScore(0) != 0.5 {
+		t.Error("should have been 0.5")
 	}
 }
 

@@ -105,6 +105,16 @@ func (ex *Example) GetConfidence(i int) float32 {
 	return float32(C.VW_GetConfidence(ex.exHandle))
 }
 
+// ExampleList a slice of examples
+type ExampleList []*Example
+
+// Finish all examples in the list
+func (el ExampleList) Finish() {
+	for _, e := range el {
+		e.Finish()
+	}
+}
+
 // VW struct for a single Vowpal Wabbit model
 type VW struct {
 	handle C.VW_HANDLE
@@ -161,7 +171,7 @@ func (vw *VW) ReadExample(example string) (*Example, error) {
 }
 
 // ReadDecisionServiceJSON reads examples from Decision Service JSON format
-func (vw *VW) ReadDecisionServiceJSON(json string) ([]*Example, error) {
+func (vw *VW) ReadDecisionServiceJSON(json string) (ExampleList, error) {
 	cstr := C.CString(json)
 	defer C.free(unsafe.Pointer(cstr))
 
@@ -180,11 +190,11 @@ func (vw *VW) ReadDecisionServiceJSON(json string) ([]*Example, error) {
 
 	C.free(unsafe.Pointer(examplePtr))
 
-	return examples, nil
+	return ExampleList(examples), nil
 }
 
 // ReadJSON reads examples from format
-func (vw *VW) ReadJSON(json string) ([]*Example, error) {
+func (vw *VW) ReadJSON(json string) (ExampleList, error) {
 	cstr := C.CString(json)
 	defer C.free(unsafe.Pointer(cstr))
 
@@ -203,7 +213,7 @@ func (vw *VW) ReadJSON(json string) ([]*Example, error) {
 
 	C.free(unsafe.Pointer(examplePtr))
 
-	return examples, nil
+	return ExampleList(examples), nil
 }
 
 // Learn learns a single example and returns the score
