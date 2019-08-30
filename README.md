@@ -39,3 +39,8 @@ func main() {
 }
 
 ```
+
+## TODO
+
+- [ ] Handle exceptions from VW
+
