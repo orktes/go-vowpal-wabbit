@@ -3,6 +3,7 @@ package vw
 // #cgo pkg-config: libvw_c_wrapper
 // #include <vowpalwabbit/vwdll.h>
 // #include <stdlib.h>
+// #include "lib.h"
 import "C"
 import (
 	"unsafe"
