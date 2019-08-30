@@ -1,6 +1,6 @@
 package vw
 
-// #cgo CXXFLAGS: -std=c++11 -I${SRCDIR} -O3 -Wall -g -Wno-sign-compare -Wno-unused-function -I/Library/Developer/CommandLineTools/usr/include/c++/v1 -I/usr/local/include
+// #cgo CXXFLAGS: -std=c++11 -I${SRCDIR}/extra -I${SRCDIR} -O3 -Wall -g -Wno-sign-compare -Wno-unused-function -I/Library/Developer/CommandLineTools/usr/include/c++/v1 -I/usr/local/include
 // #cgo LDFLAGS: -lstdc++
 // #cgo pkg-config: libvw_c_wrapper libvw
 // #include <vowpalwabbit/vwdll.h>
