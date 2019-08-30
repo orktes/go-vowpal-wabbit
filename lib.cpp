@@ -1,9 +1,6 @@
-#include <vowpalwabbit/vwdll.h>
+#include <vowpalwabbit/vw.h>
+#include "lib.hpp"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __cplusplus
+VW_DLL_MEMBER void VW_CALLING_CONV VW_ReadDSJSONExample(VW_HANDLE handle, const char* line, VW_EXAMPLE* examples, size_t* example_count) {
+    return;
 }
-#endif

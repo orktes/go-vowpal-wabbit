@@ -1,9 +1,11 @@
 package vw
 
-// #cgo pkg-config: libvw_c_wrapper
+// #cgo CXXFLAGS: -std=c++11 -I${SRCDIR} -O3 -Wall -g -Wno-sign-compare -Wno-unused-function -I/Library/Developer/CommandLineTools/usr/include/c++/v1 -I/usr/local/include
+// #cgo LDFLAGS: -lstdc++
+// #cgo pkg-config: libvw_c_wrapper libvw
 // #include <vowpalwabbit/vwdll.h>
 // #include <stdlib.h>
-// #include "lib.h"
+// #include "lib.hpp"
 import "C"
 import (
 	"unsafe"
@@ -156,6 +158,11 @@ func (vw *VW) ReadExample(example string) (*Example, error) {
 	}
 
 	return ex, nil
+}
+
+// ReadDecisionServiceJSON reads examples from Decision Service JSON format
+func (vw *VW) ReadDecisionServiceJSON(json string) ([]*Example, error) {
+	return nil, nil
 }
 
 // Learn learns a single example and returns the score
