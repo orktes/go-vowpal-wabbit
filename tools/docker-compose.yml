@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  test:
+    image: vowpalwabbit
+    build:
+      dockerfile: ./Dockerfile-ci
+      context: .
+    volumes:
+      - ..:/go/src/github.com/orktes/go-vowpal-wabbit
+    command: bash -c "cd /go/src/github.com/orktes/go-vowpal-wabbit && go test -race ./..."

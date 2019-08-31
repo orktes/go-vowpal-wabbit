@@ -39,3 +39,9 @@ func main() {
 }
 
 ```
+
+## TODO
+
+- [ ] Handle exceptions from VW
+- [ ] Add pooling for example creation (json & dsjson)
+
