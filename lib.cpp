@@ -27,8 +27,6 @@
     return retVal;                                                 \
   }
 
-
-
 VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExampleSafe(VW_HANDLE handle, const char* line, size_t* example_count, VW_ERROR *error) {
     
     HANDLE_VW_ERRORS
