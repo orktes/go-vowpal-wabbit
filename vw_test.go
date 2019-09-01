@@ -176,6 +176,20 @@ func TestReadDSJSON(t *testing.T) {
 
 }
 
+func TestReadInvalidDSJSON(t *testing.T) {
+	input := `
+	  NOT VALID JSON
+	`
+
+	vw, _ := New("--dsjson --cb_adf --no_stdin")
+	defer vw.Finish()
+
+	_, err := vw.ReadDecisionServiceJSON(input)
+	if err == nil {
+		t.Error("was expecting an error got none")
+	}
+}
+
 func TestReadJSON(t *testing.T) {
 	input := `
 	{
@@ -201,6 +215,20 @@ func TestReadJSON(t *testing.T) {
 	}
 
 	examples.Finish()
+}
+
+func TestReadInvalidJSON(t *testing.T) {
+	input := `
+	NOT VALID JSON
+	`
+
+	vw, _ := New("--json --no_stdin")
+	defer vw.Finish()
+
+	_, err := vw.ReadJSON(input)
+	if err == nil {
+		t.Error("was expecting an error got none")
+	}
 }
 
 func TestReadJSONWithMultiLineLearn(t *testing.T) {

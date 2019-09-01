@@ -16,6 +16,8 @@ import (
 	"unsafe"
 )
 
+type vwError = C.VW_ERROR
+
 // VW struct for a single Vowpal Wabbit model
 type VW struct {
 	handle C.VW_HANDLE
@@ -77,7 +79,12 @@ func (vw *VW) ReadDecisionServiceJSON(json string) (ExampleList, error) {
 	defer C.free(unsafe.Pointer(cstr))
 
 	var size C.ulong
-	examplePtr := C.VW_ReadDSJSONExample(vw.handle, cstr, &size)
+	var vwerr vwError
+
+	examplePtr := C.VW_ReadDSJSONExampleSafe(vw.handle, cstr, &size, &vwerr)
+	if err := checkError(vwerr); err != nil {
+		return nil, err
+	}
 
 	exampleHandles := (*[1 << 30]C.VW_EXAMPLE)(unsafe.Pointer(examplePtr))[:size:size]
 	examples := make([]*Example, size)
@@ -100,7 +107,12 @@ func (vw *VW) ReadJSON(json string) (ExampleList, error) {
 	defer C.free(unsafe.Pointer(cstr))
 
 	var size C.ulong
-	examplePtr := C.VW_ReadJSONExample(vw.handle, cstr, &size)
+	var vwerr vwError
+
+	examplePtr := C.VW_ReadJSONExampleSafe(vw.handle, cstr, &size, &vwerr)
+	if err := checkError(vwerr); err != nil {
+		return nil, err
+	}
 
 	exampleHandles := (*[1 << 30]C.VW_EXAMPLE)(unsafe.Pointer(examplePtr))[:size:size]
 	examples := make([]*Example, size)
@@ -128,9 +140,9 @@ func (vw *VW) Predict(ex *Example) float32 {
 }
 
 // MultiLineLearn learns from a list of example and returns the score
-func (vw *VW) MultiLineLearn(exs []*Example) {
+func (vw *VW) MultiLineLearn(exs []*Example) error {
 	if len(exs) == 0 {
-		return
+		return nil
 	}
 
 	exHandles := make([]C.VW_EXAMPLE, len(exs))
@@ -140,15 +152,20 @@ func (vw *VW) MultiLineLearn(exs []*Example) {
 
 	exPtr := (*C.VW_EXAMPLE)(unsafe.Pointer(&exHandles[0]))
 
-	C.VW_MultiLineLearn(vw.handle, exPtr, C.size_t(len(exHandles)))
+	var vwerr vwError
+	C.VW_MultiLineLearnSafe(vw.handle, exPtr, C.size_t(len(exHandles)), &vwerr)
+	if err := checkError(vwerr); err != nil {
+		return err
+	}
 
 	runtime.KeepAlive(exHandles)
+	return nil
 }
 
 // MultiLinePredict predic using a list of examples
-func (vw *VW) MultiLinePredict(exs []*Example) {
+func (vw *VW) MultiLinePredict(exs []*Example) error {
 	if len(exs) == 0 {
-		return
+		return nil
 	}
 
 	exHandles := make([]C.VW_EXAMPLE, len(exs))
@@ -158,9 +175,14 @@ func (vw *VW) MultiLinePredict(exs []*Example) {
 
 	exPtr := (*C.VW_EXAMPLE)(unsafe.Pointer(&exHandles[0]))
 
-	C.VW_MultiLinePredict(vw.handle, exPtr, C.size_t(len(exHandles)))
+	var vwerr vwError
+	C.VW_MultiLinePredictSafe(vw.handle, exPtr, C.size_t(len(exHandles)), &vwerr)
+	if err := checkError(vwerr); err != nil {
+		return err
+	}
 
 	runtime.KeepAlive(exHandles)
+	return nil
 }
 
 // PredictCostSensitive returns a cost sensitive prediction using the example

@@ -3,7 +3,36 @@
 #include "lib.hpp"
 #include <iostream>
 
-VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExample(VW_HANDLE handle, const char* line, size_t* example_count) {
+
+#define HANDLE_VW_ERRORS                                           \
+  try {
+#define END_HANDLE_VW_ERRORS(errVar, retVal)                       \
+  }                                                                \
+  catch (VW::vw_exception const& e) {                              \
+    auto msg = e.what();                                           \
+    auto err = VW_ERROR{                                           \
+        .message = new char[strlen(msg)+1],                        \
+    };                                                             \
+    std::strcpy(err.message, msg);                                 \
+    *errVar = err;                                                 \
+    return retVal;                                                 \
+  }                                                                \
+  catch (const std::exception& e) {                                \
+    auto msg = e.what();                                           \
+    auto err = VW_ERROR{                                           \
+        .message = new char[strlen(msg)+1],                        \
+    };                                                             \
+    std::strcpy(err.message, msg);                                 \
+    *errVar = err;                                                 \
+    return retVal;                                                 \
+  }
+
+
+
+VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExampleSafe(VW_HANDLE handle, const char* line, size_t* example_count, VW_ERROR *error) {
+    
+    HANDLE_VW_ERRORS
+
     vw * pointer = static_cast<vw*>(handle);
     
     auto examples = v_init<example*>();
@@ -24,10 +53,15 @@ VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExample(VW_HANDLE handle, 
     }
     examples.delete_v();
     return exmpl;
+
+    END_HANDLE_VW_ERRORS(error, NULL)
 }
 
 
-VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadJSONExample(VW_HANDLE handle, const char* line, size_t* example_count) {
+VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadJSONExampleSafe(VW_HANDLE handle, const char* line, size_t* example_count, VW_ERROR *error) {
+    
+    HANDLE_VW_ERRORS
+    
     vw * pointer = static_cast<vw*>(handle);
 
     auto examples = v_init<example*>();
@@ -45,12 +79,16 @@ VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadJSONExample(VW_HANDLE handle, co
     }
     examples.delete_v();
     return exmpl;
+
+    END_HANDLE_VW_ERRORS(error, NULL)
 }
 
 
-VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLineLearn(VW_HANDLE handle, VW_EXAMPLE* example_handles, size_t example_count) {
-    vw * pointer = static_cast<vw*>(handle);
+VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLineLearnSafe(VW_HANDLE handle, VW_EXAMPLE* example_handles, size_t example_count, VW_ERROR *error) {
     
+    HANDLE_VW_ERRORS
+    
+    vw * pointer = static_cast<vw*>(handle);
     auto examples = (example**)example_handles;
 
     multi_ex examples_vector(examples, examples + example_count);
@@ -58,10 +96,15 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLineLearn(VW_HANDLE handle, VW_EXAMPL
     pointer->learn(examples_vector);
 
     return;
+
+    END_HANDLE_VW_ERRORS(error,)
 }
 
 
-VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLinePredict(VW_HANDLE handle, VW_EXAMPLE* example_handles, size_t example_count) {
+VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLinePredictSafe(VW_HANDLE handle, VW_EXAMPLE* example_handles, size_t example_count, VW_ERROR *error) {
+    
+    HANDLE_VW_ERRORS
+    
     vw* pointer = static_cast<vw*>(handle);
     auto examples = (example**)example_handles;
 
@@ -70,5 +113,7 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLinePredict(VW_HANDLE handle, VW_EXAM
     pointer->predict(examples_vector);
 
     return;
+
+    END_HANDLE_VW_ERRORS(error,)
 }
 
