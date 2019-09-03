@@ -270,6 +270,11 @@ func (ex *Example) GetActionScore(i int) float32 {
 	return float32(C.VW_GetActionScore(ex.exHandle, C.size_t(i)))
 }
 
+// GetAction returns the action for index
+func (ex *Example) GetAction(i int) int {
+	return int(C.VW_GetAction(ex.exHandle, C.size_t(i)))
+}
+
 // GetActionScores returns all action scores as a slice
 func (ex *Example) GetActionScores() []float32 {
 	length := ex.GetActionScoreLength()
@@ -284,6 +289,22 @@ func (ex *Example) GetActionScores() []float32 {
 	}
 
 	return scores
+}
+
+// GetActions returns all actions as a slice
+func (ex *Example) GetActions() []int {
+	length := ex.GetActionScoreLength()
+	if length < 0 {
+		return nil
+	}
+
+	actions := make([]int, length)
+
+	for i := 0; i < length; i++ {
+		actions[i] = ex.GetAction(i)
+	}
+
+	return actions
 }
 
 // GetActionScoreLength get action score length

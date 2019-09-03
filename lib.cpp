@@ -115,3 +115,7 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLinePredictSafe(VW_HANDLE handle, VW_
     END_HANDLE_VW_ERRORS(error,)
 }
 
+VW_DLL_MEMBER uint32_t VW_CALLING_CONV VW_GetAction(VW_EXAMPLE e, size_t i) { 
+  example * ex = static_cast<example*>(e);
+  return ex->pred.a_s[i].action;
+}
