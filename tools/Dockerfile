@@ -1,4 +1,4 @@
-FROM ubuntu:19.10
+FROM ubuntu:bionic
 
 ENV GO_VERSION 1.12.9
 
