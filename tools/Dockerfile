@@ -1,6 +1,6 @@
 FROM ubuntu:bionic
 
-ENV GO_VERSION 1.12.9
+ENV GO_VERSION 1.13
 
 RUN apt update && apt install -y libboost-dev \
                                  libboost-program-options-dev \
