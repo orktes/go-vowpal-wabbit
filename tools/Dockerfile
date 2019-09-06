@@ -16,8 +16,9 @@ RUN apt update && apt install -y libboost-dev \
                                  wget \
                                  rapidjson-dev 
 
-RUN git clone --branch "8.7.0" --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git
-RUN cd vowpal_wabbit && make install && ldconfig
+RUN git clone --branch "8.7.0" --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git && \
+    cd vowpal_wabbit && make install && ldconfig && \
+    cd .. && rm -Rf vowpal_wabbit
 
 RUN  wget -qO- https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz \
     | tar -C /usr/local -xz && \
