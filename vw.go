@@ -195,6 +195,28 @@ func (vw *VW) SaveModel() {
 	C.VW_SaveModel(vw.handle)
 }
 
+// PerformanceStatistics writes current performance stats
+func (vw *VW) PerformanceStatistics() (PerformanceStatistics, error) {
+	var stats PerformanceStatistics
+
+	var vwerr vwError
+	statsCStruct := C.VW_PerformanceStats(vw.handle, &vwerr)
+	if err := checkError(vwerr); err != nil {
+		return stats, err
+	}
+
+	stats.CurrentPass = uint64(statsCStruct.current_pass)
+	stats.NumberOfFeatures = uint64(statsCStruct.number_of_features)
+	stats.NumberOfExamples = uint64(statsCStruct.number_of_examples)
+	stats.WeightedExampleSum = float64(statsCStruct.weighted_example_sum)
+	stats.WeightedLabelSum = float64(statsCStruct.weighted_label_sum)
+	stats.AverageLoss = float64(statsCStruct.average_loss)
+	stats.BestConstant = float64(statsCStruct.best_constant)
+	stats.BestConstantLoss = float64(statsCStruct.best_constant_loss)
+
+	return stats, nil
+}
+
 // CopyModelData returns model data as a byte slice
 func (vw *VW) CopyModelData() []byte {
 	var bufferHandle C.VW_IOBUF
@@ -216,6 +238,22 @@ func (vw *VW) Finish() {
 
 	C.VW_Finish(vw.handle)
 	vw.finished = true
+}
+
+// EndOfPass ends current pass and syncs metrics
+func (vw *VW) EndOfPass() error {
+	var vwerr vwError
+	C.VW_EndOfPass(vw.handle, &vwerr)
+	if err := checkError(vwerr); err != nil {
+		return err
+	}
+	return nil
+}
+
+// FinishPasses finalize passes
+func (vw *VW) FinishPasses() error {
+	C.VW_Finish_Passes(vw.handle)
+	return nil
 }
 
 // Example a single Vowpal Wabbit example
