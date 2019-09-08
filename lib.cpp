@@ -2,7 +2,6 @@
 #include "parse_example_json.h"
 #include "lib.hpp"
 #include <math.h>
-#include <iostream>
 
 #define HANDLE_VW_ERRORS \
   try                    \
@@ -132,12 +131,12 @@ VW_DLL_MEMBER VW_PERFORMANCE_STATS VW_CALLING_CONV VW_PerformanceStats(VW_HANDLE
 
   vw *pointer = static_cast<vw *>(handle);
 
-  auto stats = VW_PERFORMANCE_STATS{
-      .current_pass = pointer->current_pass,
-      .number_of_examples = pointer->sd->example_number,
-      .weighted_example_sum = pointer->sd->weighted_examples(),
-      .weighted_label_sum = pointer->sd->weighted_labels,
-  };
+  auto stats = VW_PERFORMANCE_STATS{};
+
+  stats.current_pass = pointer->current_pass;
+  stats.number_of_examples = pointer->sd->example_number;
+  stats.weighted_example_sum = pointer->sd->weighted_examples();
+  stats.weighted_label_sum = pointer->sd->weighted_labels;
 
   if (pointer->holdout_set_off)
     if (pointer->sd->weighted_labeled_examples > 0)
@@ -175,13 +174,7 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_EndOfPass(VW_HANDLE handle, VW_ERROR *erro
   pointer->l->end_pass();
   VW::sync_stats(*pointer);
 
-  std::cout << "Stats syncheed\n";
-
   return;
 
   END_HANDLE_VW_ERRORS(error, )
-}
-
-VW_DLL_MEMBER void VW_CALLING_CONV VW_RunMultiPass(VW_HANDLE handle, VW_ERROR *error)
-{
 }
