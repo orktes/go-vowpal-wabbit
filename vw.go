@@ -75,10 +75,16 @@ func (vw *VW) ReadExample(example string) (*Example, error) {
 
 // ReadDecisionServiceJSON reads examples from Decision Service JSON format
 func (vw *VW) ReadDecisionServiceJSON(json string) (ExampleList, error) {
-	return vw.ReadDecisionServiceJSONFromBytes([]byte(json))
+	bytes := make([]byte, len(json) + 1)
+	copy(bytes, json)
+
+	// Terminate bytes
+	bytes[len(bytes) - 1] = 0
+
+	return vw.ReadDecisionServiceJSONFromBytes(bytes)
 }
 
-// ReadDecisionServiceJSONFromBytes like ReadDecisionServiceJSON but takes in a byte slice (null terminated or len matches content)
+// ReadDecisionServiceJSONFromBytes like ReadDecisionServiceJSON but takes in a byte slice (need to be null terminated)
 func (vw *VW) ReadDecisionServiceJSONFromBytes(json []byte) (ExampleList, error) {
 	jsonPtr := (*C.char)(unsafe.Pointer(&json[0]))
 
