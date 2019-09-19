@@ -78,7 +78,7 @@ func (vw *VW) ReadDecisionServiceJSON(json string) (ExampleList, error) {
 	return vw.ReadDecisionServiceJSONFromBytes([]byte(json))
 }
 
-// ReadDecisionServiceJSONFromBytes like ReadDecisionServiceJSON but takes in a byte slice
+// ReadDecisionServiceJSONFromBytes like ReadDecisionServiceJSON but takes in a byte slice (null terminated or len matches content)
 func (vw *VW) ReadDecisionServiceJSONFromBytes(json []byte) (ExampleList, error) {
 	jsonPtr := (*C.char)(unsafe.Pointer(&json[0]))
 
