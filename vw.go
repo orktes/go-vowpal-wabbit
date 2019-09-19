@@ -75,13 +75,17 @@ func (vw *VW) ReadExample(example string) (*Example, error) {
 
 // ReadDecisionServiceJSON reads examples from Decision Service JSON format
 func (vw *VW) ReadDecisionServiceJSON(json string) (ExampleList, error) {
-	cstr := C.CString(json)
-	defer C.free(unsafe.Pointer(cstr))
+	return vw.ReadDecisionServiceJSONFromBytes([]byte(json))
+}
+
+// ReadDecisionServiceJSONFromBytes like ReadDecisionServiceJSON but takes in a byte slice
+func (vw *VW) ReadDecisionServiceJSONFromBytes(json []byte) (ExampleList, error) {
+	jsonPtr := (*C.char)(unsafe.Pointer(&json[0]))
 
 	var size C.ulong
 	var vwerr vwError
 
-	examplePtr := C.VW_ReadDSJSONExampleSafe(vw.handle, cstr, &size, &vwerr)
+	examplePtr := C.VW_ReadDSJSONExampleSafe(vw.handle, jsonPtr, &size, &vwerr)
 	if err := checkError(vwerr); err != nil {
 		return nil, err
 	}
@@ -97,6 +101,7 @@ func (vw *VW) ReadDecisionServiceJSON(json string) (ExampleList, error) {
 	}
 
 	C.free(unsafe.Pointer(examplePtr))
+	runtime.KeepAlive(json)
 
 	return ExampleList(examples), nil
 }
