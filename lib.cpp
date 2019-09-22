@@ -2,6 +2,7 @@
 #include "parse_example_json.h"
 #include "lib.hpp"
 #include <math.h>
+#include <iostream>
 
 #define HANDLE_VW_ERRORS \
   try                    \
@@ -67,7 +68,7 @@ VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExampleSafe(VW_HANDLE hand
   vw *pointer = static_cast<vw *>(handle);
 
   auto examples = v_init<example *>();
-  examples.push_back(&VW::get_unused_example(pointer));
+  examples.push_back(&get_or_create_example(example_pool));
 
   DecisionServiceInteraction interaction;
   VW::read_line_decision_service_json<false>(*pointer, examples, const_cast<char *>(line), strlen(line), false,
@@ -96,7 +97,7 @@ VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadJSONExampleSafe(VW_HANDLE handle
   vw *pointer = static_cast<vw *>(handle);
 
   auto examples = v_init<example *>();
-  examples.push_back(&VW::get_unused_example(pointer));
+  examples.push_back(&get_or_create_example(example_pool));
 
   VW::read_line_json<false>(*pointer, examples, const_cast<char *>(line), (VW::example_factory_t)&get_or_create_example, example_pool);
 
