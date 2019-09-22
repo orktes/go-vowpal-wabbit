@@ -34,30 +34,32 @@ struct ExamplePool
 {
   vw *vw;
   std::vector<example *> example_pool;
+
+  example *get_or_create_example()
+  {
+    if (example_pool.size() == 0)
+    {
+      auto ex = VW::alloc_examples(0, 1);
+      vw->p->lp.default_label(&ex->l);
+
+      return ex;
+    }
+
+    // get last element
+    example *ex = example_pool.back();
+    example_pool.pop_back();
+
+    VW::empty_example(*vw, *ex);
+    vw->p->lp.default_label(&ex->l);
+
+    return ex;
+  }
 };
 
-example &get_or_create_example(VW_EXAMPLE_POOL_HANDLE example_pool_handle)
+example &get_or_create_example_f(VW_EXAMPLE_POOL_HANDLE example_pool_handle)
 {
   ExamplePool *pool = static_cast<ExamplePool *>(example_pool_handle);
-
-  auto example_pool = pool->example_pool;
-
-  if (example_pool.size() == 0)
-  {
-    auto ex = VW::alloc_examples(0, 1);
-    pool->vw->p->lp.default_label(&ex->l);
-
-    return *ex;
-  }
-
-  // get last element
-  example *ex = example_pool.back();
-  example_pool.pop_back();
-
-  VW::empty_example(*pool->vw, *ex);
-  pool->vw->p->lp.default_label(&ex->l);
-
-  return *ex;
+  return *pool->get_or_create_example();
 }
 
 VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExampleSafe(VW_HANDLE handle, VW_EXAMPLE_POOL_HANDLE example_pool, const char *line, size_t *example_count, VW_ERROR *error)
@@ -65,14 +67,15 @@ VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExampleSafe(VW_HANDLE hand
 
   HANDLE_VW_ERRORS
 
+  ExamplePool *pool = static_cast<ExamplePool *>(example_pool);
   vw *pointer = static_cast<vw *>(handle);
 
   auto examples = v_init<example *>();
-  examples.push_back(&get_or_create_example(example_pool));
+  examples.push_back(pool->get_or_create_example());
 
   DecisionServiceInteraction interaction;
   VW::read_line_decision_service_json<false>(*pointer, examples, const_cast<char *>(line), strlen(line), false,
-                                             (VW::example_factory_t)&get_or_create_example, example_pool, &interaction);
+                                             (VW::example_factory_t)get_or_create_example_f, example_pool, &interaction);
 
   VW::setup_examples(*pointer, examples);
 
@@ -94,12 +97,13 @@ VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadJSONExampleSafe(VW_HANDLE handle
 
   HANDLE_VW_ERRORS
 
+  ExamplePool *pool = static_cast<ExamplePool *>(example_pool);
   vw *pointer = static_cast<vw *>(handle);
 
   auto examples = v_init<example *>();
-  examples.push_back(&get_or_create_example(example_pool));
+  examples.push_back(pool->get_or_create_example());
 
-  VW::read_line_json<false>(*pointer, examples, const_cast<char *>(line), (VW::example_factory_t)&get_or_create_example, example_pool);
+  VW::read_line_json<false>(*pointer, examples, const_cast<char *>(line), (VW::example_factory_t)get_or_create_example_f, example_pool);
 
   VW::setup_examples(*pointer, examples);
 
@@ -246,6 +250,7 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_ReleaseExamplePool(VW_EXAMPLE_POOL_HANDLE 
   for (auto &&ex : pool->example_pool)
   {
     VW::dealloc_example(pool->vw->p->lp.delete_label, *ex);
+    ::free_it(ex);
   }
 
   pool->example_pool.empty();
