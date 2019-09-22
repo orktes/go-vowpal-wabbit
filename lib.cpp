@@ -32,25 +32,25 @@
 
 struct ExamplePool
 {
-  vw *vw;
-  std::vector<example *> example_pool;
+  vw *_vw;
+  std::vector<example *> _example_pool;
 
   example *get_or_create_example()
   {
-    if (example_pool.size() == 0)
+    if (_example_pool.size() == 0)
     {
       auto ex = VW::alloc_examples(0, 1);
-      vw->p->lp.default_label(&ex->l);
+      _vw->p->lp.default_label(&ex->l);
 
       return ex;
     }
 
     // get last element
-    example *ex = example_pool.back();
-    example_pool.pop_back();
+    example *ex = _example_pool.back();
+    _example_pool.pop_back();
 
-    VW::empty_example(*vw, *ex);
-    vw->p->lp.default_label(&ex->l);
+    VW::empty_example(*_vw, *ex);
+    _vw->p->lp.default_label(&ex->l);
 
     return ex;
   }
@@ -238,7 +238,7 @@ VW_DLL_MEMBER VW_EXAMPLE_POOL_HANDLE VW_CALLING_CONV VW_CreateExamplePool(VW_HAN
   vw *pointer = static_cast<vw *>(handle);
   auto pool = new ExamplePool;
 
-  pool->vw = pointer;
+  pool->_vw = pointer;
 
   return pool;
 }
@@ -247,14 +247,14 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_ReleaseExamplePool(VW_EXAMPLE_POOL_HANDLE 
 {
 
   ExamplePool *pool = static_cast<ExamplePool *>(handle);
-  for (auto &&ex : pool->example_pool)
+  for (auto &&ex : pool->_example_pool)
   {
-    VW::dealloc_example(pool->vw->p->lp.delete_label, *ex);
+    VW::dealloc_example(pool->_vw->p->lp.delete_label, *ex);
     ::free_it(ex);
   }
 
-  pool->example_pool.empty();
-  pool->vw = NULL;
+  pool->_example_pool.empty();
+  pool->_vw = NULL;
 
   delete pool;
 }
@@ -264,5 +264,5 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_ReturnExampleToPool(VW_EXAMPLE_POOL_HANDLE
   ExamplePool *pool = static_cast<ExamplePool *>(pool_handle);
   example *ex = static_cast<example *>(e);
 
-  pool->example_pool.emplace_back(ex);
+  pool->_example_pool.emplace_back(ex);
 }
