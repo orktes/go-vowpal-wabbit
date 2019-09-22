@@ -20,7 +20,8 @@ type vwError = C.VW_ERROR
 
 // VW struct for a single Vowpal Wabbit model
 type VW struct {
-	handle C.VW_HANDLE
+	handle      C.VW_HANDLE
+	examplePool C.VW_EXAMPLE_POOL_HANDLE
 
 	finished bool
 }
@@ -60,13 +61,21 @@ func NewWithSeed(seedModel *VW, extraArgs string) (*VW, error) {
 	return newWithHandle(C.VW_SeedWithModel(seedModel.handle, cstr))
 }
 
+func (vw *VW) getExamplePool() C.VW_EXAMPLE_POOL_HANDLE {
+	if vw.examplePool == nil {
+		vw.examplePool = C.VW_CreateExamplePool(vw.handle)
+	}
+
+	return vw.examplePool
+}
+
 // ReadExample parses a single text based example
 func (vw *VW) ReadExample(example string) (*Example, error) {
 	cstr := C.CString(example)
 	defer C.free(unsafe.Pointer(cstr))
 
 	ex := &Example{
-		vwHandle: vw.handle,
+		vw:       vw,
 		exHandle: C.VW_ReadExampleA(vw.handle, cstr),
 	}
 
@@ -75,11 +84,11 @@ func (vw *VW) ReadExample(example string) (*Example, error) {
 
 // ReadDecisionServiceJSON reads examples from Decision Service JSON format
 func (vw *VW) ReadDecisionServiceJSON(json string) (ExampleList, error) {
-	bytes := make([]byte, len(json) + 1)
+	bytes := make([]byte, len(json)+1)
 	copy(bytes, json)
 
 	// Terminate bytes
-	bytes[len(bytes) - 1] = 0
+	bytes[len(bytes)-1] = 0
 
 	return vw.ReadDecisionServiceJSONFromBytes(bytes)
 }
@@ -91,7 +100,8 @@ func (vw *VW) ReadDecisionServiceJSONFromBytes(json []byte) (ExampleList, error)
 	var size C.ulong
 	var vwerr vwError
 
-	examplePtr := C.VW_ReadDSJSONExampleSafe(vw.handle, jsonPtr, &size, &vwerr)
+	pool := vw.getExamplePool()
+	examplePtr := C.VW_ReadDSJSONExampleSafe(vw.handle, pool, jsonPtr, &size, &vwerr)
 	if err := checkError(vwerr); err != nil {
 		return nil, err
 	}
@@ -101,8 +111,9 @@ func (vw *VW) ReadDecisionServiceJSONFromBytes(json []byte) (ExampleList, error)
 
 	for i, handle := range exampleHandles {
 		examples[i] = &Example{
-			vwHandle: vw.handle,
+			vw:       vw,
 			exHandle: handle,
+			fromPool: true,
 		}
 	}
 
@@ -120,7 +131,8 @@ func (vw *VW) ReadJSON(json string) (ExampleList, error) {
 	var size C.ulong
 	var vwerr vwError
 
-	examplePtr := C.VW_ReadJSONExampleSafe(vw.handle, cstr, &size, &vwerr)
+	pool := vw.getExamplePool()
+	examplePtr := C.VW_ReadJSONExampleSafe(vw.handle, pool, cstr, &size, &vwerr)
 	if err := checkError(vwerr); err != nil {
 		return nil, err
 	}
@@ -130,8 +142,9 @@ func (vw *VW) ReadJSON(json string) (ExampleList, error) {
 
 	for i, handle := range exampleHandles {
 		examples[i] = &Example{
-			vwHandle: vw.handle,
 			exHandle: handle,
+			vw:       vw,
+			fromPool: true,
 		}
 	}
 
@@ -201,6 +214,18 @@ func (vw *VW) PredictCostSensitive(ex *Example) float32 {
 	return float32(C.VW_PredictCostSensitive(vw.handle, ex.exHandle))
 }
 
+// StartParser starts the parser
+func (vw *VW) StartParser() error {
+	C.VW_StartParser(vw.handle)
+	return nil
+}
+
+// EndParser ends the parser
+func (vw *VW) EndParser() error {
+	C.VW_EndParser(vw.handle)
+	return nil
+}
+
 // SaveModel saves model to file given during construction
 func (vw *VW) SaveModel() {
 	C.VW_SaveModel(vw.handle)
@@ -247,7 +272,13 @@ func (vw *VW) Finish() {
 		return
 	}
 
+	if vw.examplePool != nil {
+		C.VW_ReleaseExamplePool(vw.examplePool)
+		vw.examplePool = nil
+	}
+
 	C.VW_Finish(vw.handle)
+	vw.handle = nil
 	vw.finished = true
 }
 
@@ -267,10 +298,22 @@ func (vw *VW) FinishPasses() error {
 	return nil
 }
 
+// SyncStats syncs stats from the learner (should be called before vw.PerformanceStatistics)
+func (vw *VW) SyncStats() error {
+	var vwerr vwError
+	C.VW_SyncStats(vw.handle, &vwerr)
+	if err := checkError(vwerr); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Example a single Vowpal Wabbit example
 type Example struct {
 	exHandle C.VW_EXAMPLE
-	vwHandle C.VW_HANDLE
+	vw       *VW
+	fromPool bool
+
 	finished bool
 }
 
@@ -280,7 +323,11 @@ func (ex *Example) Finish() {
 		return
 	}
 
-	C.VW_FinishExample(ex.vwHandle, ex.exHandle)
+	if ex.fromPool && ex.vw.examplePool != nil {
+		C.VW_ReturnExampleToPool(ex.vw.examplePool, ex.exHandle)
+	} else {
+		C.VW_FinishExample(ex.vw.handle, ex.exHandle)
+	}
 	ex.finished = true
 }
 
