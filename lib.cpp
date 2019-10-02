@@ -74,7 +74,7 @@ VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExampleSafe(VW_HANDLE hand
   examples.push_back(pool->get_or_create_example());
 
   DecisionServiceInteraction interaction;
-  VW::read_line_decision_service_json<false>(*pointer, examples, const_cast<char *>(line), strlen(line), true,
+  VW::read_line_decision_service_json<false>(*pointer, examples, const_cast<char *>(line), strlen(line), false,
                                              (VW::example_factory_t)get_or_create_example_f, example_pool, &interaction);
 
   VW::setup_examples(*pointer, examples);
