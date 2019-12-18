@@ -154,10 +154,46 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLinePredictSafe(VW_HANDLE handle, VW_
   END_HANDLE_VW_ERRORS(error, )
 }
 
+VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetScalarLength(VW_EXAMPLE e)
+{
+  example *ex = static_cast<example *>(e);
+  return ex->pred.scalars.size();
+}
+
+VW_DLL_MEMBER float VW_CALLING_CONV VW_GetScalar(VW_EXAMPLE e, size_t i)
+{
+  example *ex = static_cast<example *>(e);
+  return ex->pred.scalars[i];
+}
+
 VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetAction(VW_EXAMPLE e, size_t i)
 {
   example *ex = static_cast<example *>(e);
   return ex->pred.a_s[i].action;
+}
+
+VW_DLL_MEMBER float VW_CALLING_CONV VW_GetCBCost(VW_EXAMPLE e, size_t i)
+{
+  example *ex = static_cast<example *>(e);
+  return ex->l.cb.costs[i].cost;
+}
+
+VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetCBCostLength(VW_EXAMPLE e)
+{
+  example *ex = static_cast<example *>(e);
+  return ex->l.cb.costs.size();
+}
+
+VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetMultiClassPrediction(VW_EXAMPLE e)
+{
+  example *ex = static_cast<example *>(e);
+  return ex->pred.multiclass;
+}
+
+VW_DLL_MEMBER float VW_CALLING_CONV VW_GetLoss(VW_EXAMPLE e)
+{
+  example *ex = static_cast<example *>(e);
+  return ex->loss;
 }
 
 VW_DLL_MEMBER VW_PERFORMANCE_STATS VW_CALLING_CONV VW_PerformanceStats(VW_HANDLE handle, VW_ERROR *error)

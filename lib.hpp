@@ -33,6 +33,13 @@ extern "C"
     VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLinePredictSafe(VW_HANDLE handle, VW_EXAMPLE *example_handles, size_t example_count, VW_ERROR *error);
 
     VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetAction(VW_EXAMPLE e, size_t i);
+    VW_DLL_MEMBER float VW_CALLING_CONV VW_GetLoss(VW_EXAMPLE e);
+    VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetCBCostLength(VW_EXAMPLE e);
+    VW_DLL_MEMBER float VW_CALLING_CONV VW_GetCBCost(VW_EXAMPLE e, size_t i);
+    VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetMultiClassPrediction(VW_EXAMPLE e);
+    VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetScalarLength(VW_EXAMPLE e);
+    VW_DLL_MEMBER float VW_CALLING_CONV VW_GetScalar(VW_EXAMPLE e, size_t i);
+
 
     VW_DLL_MEMBER void VW_CALLING_CONV VW_SyncStats(VW_HANDLE handle, VW_ERROR *error);
     VW_DLL_MEMBER VW_PERFORMANCE_STATS VW_CALLING_CONV VW_PerformanceStats(VW_HANDLE handle, VW_ERROR *error);

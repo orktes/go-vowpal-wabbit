@@ -424,8 +424,38 @@ func (ex *Example) GetFeatureNumber() int {
 }
 
 // GetConfidence returns confidence
-func (ex *Example) GetConfidence(i int) float32 {
+func (ex *Example) GetConfidence() float32 {
 	return float32(C.VW_GetConfidence(ex.exHandle))
+}
+
+// GetLoss returns loss for the example
+func (ex *Example) GetLoss() float32 {
+	return float32(C.VW_GetLoss(ex.exHandle))
+}
+
+// GetCBCostLength get cb cost length
+func (ex *Example) GetCBCostLength() int {
+	return int(C.VW_GetCBCostLength(ex.exHandle))
+}
+
+// GetCBCost get cb cost length
+func (ex *Example) GetCBCost(i int) int {
+	return int(C.VW_GetCBCost(ex.exHandle, C.size_t(i)))
+}
+
+// GetMultiClassPrediction returns prediction value for a multiclass prediction
+func (ex *Example) GetMultiClassPrediction() int {
+	return int(C.VW_GetMultiClassPrediction(ex.exHandle))
+}
+
+// GetScalarLength returns the length of scalar predictions in the example
+func (ex *Example) GetScalarLength() int {
+	return int(C.VW_GetScalarLength(ex.exHandle))
+}
+
+// GetScalar returns the length of scalar predictions in the example
+func (ex *Example) GetScalar(i int) float32 {
+	return float32(C.VW_GetScalar(ex.exHandle, C.size_t(i)))
 }
 
 // ExampleList a slice of examples
