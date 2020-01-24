@@ -1,5 +1,5 @@
 #include <vowpalwabbit/vw.h>
-#include "parse_example_json.h"
+#include <vowpalwabbit/parse_example_json.h>
 #include "lib.hpp"
 #include <math.h>
 #include <iostream>
