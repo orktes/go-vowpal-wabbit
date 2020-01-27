@@ -209,6 +209,17 @@ func (vw *VW) MultiLinePredict(exs []*Example) error {
 	return nil
 }
 
+// GetLearningRate returns the current learning rate
+func (vw *VW) GetLearningRate() (float32, error) {
+	var vwerr vwError
+	learningRate := C.VW_GetLearningRate(vw.handle, &vwerr)
+	if err := checkError(vwerr); err != nil {
+		return 0.0, err
+	}
+
+	return float32(learningRate), nil
+}
+
 // PredictCostSensitive returns a cost sensitive prediction using the example
 func (vw *VW) PredictCostSensitive(ex *Example) float32 {
 	return float32(C.VW_PredictCostSensitive(vw.handle, ex.exHandle))
