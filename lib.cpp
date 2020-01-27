@@ -237,6 +237,17 @@ VW_DLL_MEMBER VW_PERFORMANCE_STATS VW_CALLING_CONV VW_PerformanceStats(VW_HANDLE
   END_HANDLE_VW_ERRORS(error, VW_PERFORMANCE_STATS{})
 }
 
+VW_DLL_MEMBER float VW_CALLING_CONV VW_GetLearningRate(VW_HANDLE handle, VW_ERROR *error)
+{
+  HANDLE_VW_ERRORS
+
+  vw *pointer = static_cast<vw *>(handle);
+
+  return pointer->eta;
+
+  END_HANDLE_VW_ERRORS(error, 0.0)
+}
+
 VW_DLL_MEMBER void VW_CALLING_CONV VW_SyncStats(VW_HANDLE handle, VW_ERROR *error)
 {
   HANDLE_VW_ERRORS
