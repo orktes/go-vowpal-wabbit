@@ -16,7 +16,7 @@ RUN apt update && apt install -y libboost-dev \
                                  wget \
                                  rapidjson-dev 
 
-RUN git clone --branch "8.8.0" --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git && \
+RUN git clone --branch "8.9.0" --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git && \
     cd vowpal_wabbit && make install && ldconfig && \
     cd .. && rm -Rf vowpal_wabbit
 
