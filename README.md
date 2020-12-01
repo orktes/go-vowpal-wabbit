@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/orktes/go-vowpal-wabbit.svg?branch=master)](https://travis-ci.org/orktes/go-vowpal-wabbit)
 [![GoDoc](https://godoc.org/github.com/orktes/go-vowpal-wabbit?status.svg)](http://godoc.org/github.com/orktes/go-vowpal-wabbit)
 
 
