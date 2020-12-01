@@ -4,7 +4,7 @@ go:
 - '1.12.9'
 
 before_install:
-  - git clone --branch "8.9.0" --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git
+  - git clone --branch "8.9.0-fixes" --recursive https://github.com/orktes/vowpal_wabbit.git
   - cd vowpal_wabbit
   - sudo apt update -y
   - sudo apt install -y rapidjson-dev libboost-dev libboost-program-options-dev libboost-system-dev libboost-thread-dev libboost-math-dev libboost-test-dev zlib1g-dev cmake g++
