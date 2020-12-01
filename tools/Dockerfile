@@ -3,20 +3,20 @@ FROM ubuntu:bionic
 ENV GO_VERSION 1.13
 
 RUN apt update && apt install -y libboost-dev \
-                                 libboost-program-options-dev \
-                                 libboost-system-dev \
-                                 libboost-thread-dev \
-                                 libboost-math-dev \
-                                 libboost-test-dev \
-                                 zlib1g-dev \
-                                 cmake \
-                                 g++ \
-                                 git \
-                                 pkg-config \
-                                 wget \
-                                 rapidjson-dev 
+    libboost-program-options-dev \
+    libboost-system-dev \
+    libboost-thread-dev \
+    libboost-math-dev \
+    libboost-test-dev \
+    zlib1g-dev \
+    cmake \
+    g++ \
+    git \
+    pkg-config \
+    wget \
+    rapidjson-dev 
 
-RUN git clone --branch "8.9.0" --recursive https://github.com/VowpalWabbit/vowpal_wabbit.git && \
+RUN git clone --branch "8.9.0-fixes" --recursive https://github.com/orktes/vowpal_wabbit.git && \
     cd vowpal_wabbit && make install && ldconfig && \
     cd .. && rm -Rf vowpal_wabbit
 
