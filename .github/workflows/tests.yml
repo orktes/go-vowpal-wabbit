@@ -1,0 +1,40 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.13
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+      
+    - name: Install Vowpal Wabbit
+      run: |
+        apt update
+        apt install -y jq libboost-dev libboost-program-options-dev libboost-system-dev libboost-thread-dev libboost-math-dev libboost-test-dev libgoogle-perftools4 zlib1g-dev cmake g++ git pkg-config wget rapidjson-dev 
+        git clone --branch "8.9.0-fixes" --recursive https://github.com/orktes/vowpal_wabbit.git
+        cd vowpal_wabbit && make install && ldconfig
+        
+    - name: Get dependencies
+      run: |
+        go get -v -t -d ./...
+        if [ -f Gopkg.toml ]; then
+            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+            dep ensure
+        fi
+
+    - name: Test
+      run: go test -v ./...
