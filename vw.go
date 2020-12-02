@@ -4,7 +4,7 @@
 // and additional locking is required if libary is being called from multiple goroutines.
 package vw
 
-// #cgo CXXFLAGS: -std=c++11 -I${SRCDIR}/extra -I${SRCDIR} -O3 -Wall -g -Wno-sign-compare -Wno-unused-function -I/Library/Developer/CommandLineTools/usr/include/c++/v1 -I/usr/local/include
+// #cgo CXXFLAGS: -std=c++11 -I${SRCDIR}/extra -I${SRCDIR} -O3 -Wall -g -Wno-sign-compare -Wno-unused-function  -I/usr/local/include
 // #cgo LDFLAGS: -lstdc++
 // #cgo pkg-config: libvw_c_wrapper libvw RapidJSON
 // #include <vowpalwabbit/vwdll.h>
