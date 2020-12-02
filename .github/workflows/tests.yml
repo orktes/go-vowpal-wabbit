@@ -23,10 +23,10 @@ jobs:
       
     - name: Install Vowpal Wabbit
       run: |
-        apt update
-        apt install -y jq libboost-dev libboost-program-options-dev libboost-system-dev libboost-thread-dev libboost-math-dev libboost-test-dev libgoogle-perftools4 zlib1g-dev cmake g++ git pkg-config wget rapidjson-dev 
+        sudo apt update
+        sudo apt install -y jq libboost-dev libboost-program-options-dev libboost-system-dev libboost-thread-dev libboost-math-dev libboost-test-dev libgoogle-perftools4 zlib1g-dev cmake g++ git pkg-config wget rapidjson-dev 
         git clone --branch "8.9.0-fixes" --recursive https://github.com/orktes/vowpal_wabbit.git
-        cd vowpal_wabbit && make install && ldconfig
+        cd vowpal_wabbit && sudo make install && sudo ldconfig
         
     - name: Get dependencies
       run: |

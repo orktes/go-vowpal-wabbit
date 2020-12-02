@@ -40,7 +40,7 @@ struct ExamplePool
     if (_example_pool.size() == 0)
     {
       auto ex = VW::alloc_examples(0, 1);
-      _vw->p->lp.default_label(&ex->l);
+      _vw->example_parser->lbl_parser.default_label(&ex->l);
 
       return ex;
     }
@@ -50,7 +50,7 @@ struct ExamplePool
     _example_pool.pop_back();
 
     VW::empty_example(*_vw, *ex);
-    _vw->p->lp.default_label(&ex->l);
+    _vw->example_parser->lbl_parser.default_label(&ex->l);
 
     return ex;
   }
@@ -62,7 +62,7 @@ example &get_or_create_example_f(VW_EXAMPLE_POOL_HANDLE example_pool_handle)
   return *pool->get_or_create_example();
 }
 
-VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExampleSafe(VW_HANDLE handle, VW_EXAMPLE_POOL_HANDLE example_pool, const char *line, size_t *example_count, VW_ERROR *error)
+VW_DLL_PUBLIC VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExampleSafe(VW_HANDLE handle, VW_EXAMPLE_POOL_HANDLE example_pool, const char *line, size_t *example_count, VW_ERROR *error)
 {
 
   HANDLE_VW_ERRORS
@@ -92,7 +92,7 @@ VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadDSJSONExampleSafe(VW_HANDLE hand
   END_HANDLE_VW_ERRORS(error, NULL)
 }
 
-VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadJSONExampleSafe(VW_HANDLE handle, VW_EXAMPLE_POOL_HANDLE example_pool, const char *line, size_t *example_count, VW_ERROR *error)
+VW_DLL_PUBLIC VW_EXAMPLE VW_CALLING_CONV VW_ReadJSONExampleSafe(VW_HANDLE handle, VW_EXAMPLE_POOL_HANDLE example_pool, const char *line, size_t *example_count, VW_ERROR *error)
 {
 
   HANDLE_VW_ERRORS
@@ -120,7 +120,7 @@ VW_DLL_MEMBER VW_EXAMPLE VW_CALLING_CONV VW_ReadJSONExampleSafe(VW_HANDLE handle
   END_HANDLE_VW_ERRORS(error, NULL)
 }
 
-VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLineLearnSafe(VW_HANDLE handle, VW_EXAMPLE *example_handles, size_t example_count, VW_ERROR *error)
+VW_DLL_PUBLIC void VW_CALLING_CONV VW_MultiLineLearnSafe(VW_HANDLE handle, VW_EXAMPLE *example_handles, size_t example_count, VW_ERROR *error)
 {
 
   HANDLE_VW_ERRORS
@@ -137,7 +137,7 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLineLearnSafe(VW_HANDLE handle, VW_EX
   END_HANDLE_VW_ERRORS(error, )
 }
 
-VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLinePredictSafe(VW_HANDLE handle, VW_EXAMPLE *example_handles, size_t example_count, VW_ERROR *error)
+VW_DLL_PUBLIC void VW_CALLING_CONV VW_MultiLinePredictSafe(VW_HANDLE handle, VW_EXAMPLE *example_handles, size_t example_count, VW_ERROR *error)
 {
 
   HANDLE_VW_ERRORS
@@ -154,49 +154,49 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_MultiLinePredictSafe(VW_HANDLE handle, VW_
   END_HANDLE_VW_ERRORS(error, )
 }
 
-VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetScalarLength(VW_EXAMPLE e)
+VW_DLL_PUBLIC size_t VW_CALLING_CONV VW_GetScalarLength(VW_EXAMPLE e)
 {
   example *ex = static_cast<example *>(e);
   return ex->pred.scalars.size();
 }
 
-VW_DLL_MEMBER float VW_CALLING_CONV VW_GetScalar(VW_EXAMPLE e, size_t i)
+VW_DLL_PUBLIC float VW_CALLING_CONV VW_GetScalar(VW_EXAMPLE e, size_t i)
 {
   example *ex = static_cast<example *>(e);
   return ex->pred.scalars[i];
 }
 
-VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetAction(VW_EXAMPLE e, size_t i)
+VW_DLL_PUBLIC size_t VW_CALLING_CONV VW_GetAction(VW_EXAMPLE e, size_t i)
 {
   example *ex = static_cast<example *>(e);
   return ex->pred.a_s[i].action;
 }
 
-VW_DLL_MEMBER float VW_CALLING_CONV VW_GetCBCost(VW_EXAMPLE e, size_t i)
+VW_DLL_PUBLIC float VW_CALLING_CONV VW_GetCBCost(VW_EXAMPLE e, size_t i)
 {
   example *ex = static_cast<example *>(e);
   return ex->l.cb.costs[i].cost;
 }
 
-VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetCBCostLength(VW_EXAMPLE e)
+VW_DLL_PUBLIC size_t VW_CALLING_CONV VW_GetCBCostLength(VW_EXAMPLE e)
 {
   example *ex = static_cast<example *>(e);
   return ex->l.cb.costs.size();
 }
 
-VW_DLL_MEMBER size_t VW_CALLING_CONV VW_GetMultiClassPrediction(VW_EXAMPLE e)
+VW_DLL_PUBLIC size_t VW_CALLING_CONV VW_GetMultiClassPrediction(VW_EXAMPLE e)
 {
   example *ex = static_cast<example *>(e);
   return ex->pred.multiclass;
 }
 
-VW_DLL_MEMBER float VW_CALLING_CONV VW_GetLoss(VW_EXAMPLE e)
+VW_DLL_PUBLIC float VW_CALLING_CONV VW_GetLoss(VW_EXAMPLE e)
 {
   example *ex = static_cast<example *>(e);
   return ex->loss;
 }
 
-VW_DLL_MEMBER VW_PERFORMANCE_STATS VW_CALLING_CONV VW_PerformanceStats(VW_HANDLE handle, VW_ERROR *error)
+VW_DLL_PUBLIC VW_PERFORMANCE_STATS VW_CALLING_CONV VW_PerformanceStats(VW_HANDLE handle, VW_ERROR *error)
 {
   HANDLE_VW_ERRORS
 
@@ -237,7 +237,7 @@ VW_DLL_MEMBER VW_PERFORMANCE_STATS VW_CALLING_CONV VW_PerformanceStats(VW_HANDLE
   END_HANDLE_VW_ERRORS(error, VW_PERFORMANCE_STATS{})
 }
 
-VW_DLL_MEMBER float VW_CALLING_CONV VW_GetLearningRate(VW_HANDLE handle, VW_ERROR *error)
+VW_DLL_PUBLIC float VW_CALLING_CONV VW_GetLearningRate(VW_HANDLE handle, VW_ERROR *error)
 {
   HANDLE_VW_ERRORS
 
@@ -248,7 +248,7 @@ VW_DLL_MEMBER float VW_CALLING_CONV VW_GetLearningRate(VW_HANDLE handle, VW_ERRO
   END_HANDLE_VW_ERRORS(error, 0.0)
 }
 
-VW_DLL_MEMBER void VW_CALLING_CONV VW_SyncStats(VW_HANDLE handle, VW_ERROR *error)
+VW_DLL_PUBLIC void VW_CALLING_CONV VW_SyncStats(VW_HANDLE handle, VW_ERROR *error)
 {
   HANDLE_VW_ERRORS
 
@@ -261,7 +261,7 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_SyncStats(VW_HANDLE handle, VW_ERROR *erro
   END_HANDLE_VW_ERRORS(error, )
 }
 
-VW_DLL_MEMBER void VW_CALLING_CONV VW_EndOfPass(VW_HANDLE handle, VW_ERROR *error)
+VW_DLL_PUBLIC void VW_CALLING_CONV VW_EndOfPass(VW_HANDLE handle, VW_ERROR *error)
 {
   HANDLE_VW_ERRORS
 
@@ -280,7 +280,7 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_EndOfPass(VW_HANDLE handle, VW_ERROR *erro
   END_HANDLE_VW_ERRORS(error, )
 }
 
-VW_DLL_MEMBER VW_EXAMPLE_POOL_HANDLE VW_CALLING_CONV VW_CreateExamplePool(VW_HANDLE handle)
+VW_DLL_PUBLIC VW_EXAMPLE_POOL_HANDLE VW_CALLING_CONV VW_CreateExamplePool(VW_HANDLE handle)
 {
   vw *pointer = static_cast<vw *>(handle);
   auto pool = new ExamplePool;
@@ -290,13 +290,13 @@ VW_DLL_MEMBER VW_EXAMPLE_POOL_HANDLE VW_CALLING_CONV VW_CreateExamplePool(VW_HAN
   return pool;
 }
 
-VW_DLL_MEMBER void VW_CALLING_CONV VW_ReleaseExamplePool(VW_EXAMPLE_POOL_HANDLE handle)
+VW_DLL_PUBLIC void VW_CALLING_CONV VW_ReleaseExamplePool(VW_EXAMPLE_POOL_HANDLE handle)
 {
 
   ExamplePool *pool = static_cast<ExamplePool *>(handle);
   for (auto &&ex : pool->_example_pool)
   {
-    VW::dealloc_example(pool->_vw->p->lp.delete_label, *ex);
+    VW::dealloc_example(pool->_vw->example_parser->lbl_parser.delete_label, *ex);
     ::free_it(ex);
   }
 
@@ -306,7 +306,7 @@ VW_DLL_MEMBER void VW_CALLING_CONV VW_ReleaseExamplePool(VW_EXAMPLE_POOL_HANDLE 
   delete pool;
 }
 
-VW_DLL_MEMBER void VW_CALLING_CONV VW_ReturnExampleToPool(VW_EXAMPLE_POOL_HANDLE pool_handle, VW_EXAMPLE e)
+VW_DLL_PUBLIC void VW_CALLING_CONV VW_ReturnExampleToPool(VW_EXAMPLE_POOL_HANDLE pool_handle, VW_EXAMPLE e)
 {
   ExamplePool *pool = static_cast<ExamplePool *>(pool_handle);
   example *ex = static_cast<example *>(e);
